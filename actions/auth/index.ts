@@ -8,7 +8,8 @@ import {
   generateQrCode,
   getUserByEmail,
   login,
-  verifyTotp,
+  signOut,
+  validateTotp,
 } from "@/lib/db";
 import type { PrevState } from "@/types";
 
@@ -18,7 +19,11 @@ export const registerAction = async (_prev: PrevState, formData: FormData) => {
   const password = formData.get("password") as string;
 
   if (!name || !email || !password) {
-    return { message: "Name, email and password are required", success: false };
+    return {
+      message: "Name, email and password are required",
+      success: false,
+      defaultValues: { name, email, password },
+    };
   }
 
   const userExists = await getUserByEmail(email);
@@ -38,10 +43,18 @@ export const loginAction = async (_prev: PrevState, formData: FormData) => {
   const remember = !!formData.get("remember");
 
   if (!email || !password) {
-    return { message: "Email and password are required", success: false };
+    return {
+      message: "Email and password are required",
+      success: false,
+      defaultValues: { email, password, remember },
+    };
   }
 
-  await login({ email, password, remember });
+  const logged = await login({ email, password, remember });
+
+  if ("twoFactorEnabled" in logged.user && logged.user.twoFactorEnabled) {
+    return redirect("/2fa");
+  }
 
   return redirect("/app");
 };
@@ -61,7 +74,23 @@ export const generateQrCodeAction = async (
   return { message, success: true, verification };
 };
 
-export const disable2FAAction = async (
+export const twoFactorAction = async (_prev: PrevState, formData: FormData) => {
+  const code = formData.get("otp") as string;
+
+  if (!code) {
+    return {
+      message: "Code is required",
+      success: false,
+      defaultValues: { code },
+    };
+  }
+
+  await validateTotp(code);
+
+  return redirect("/app");
+};
+
+export const disable2faAction = async (
   _prev: PrevState,
   formData: FormData
 ) => {
@@ -71,22 +100,21 @@ export const disable2FAAction = async (
     return { message: "Password is required", success: false };
   }
 
-  const { message, success } = await disable2FA(password);
+  const disabled = await disable2FA(password);
 
-  return { message, success };
+  return {
+    message: disabled ? "2FA disabled" : "Error disabling 2FA",
+    success: disabled,
+  };
 };
 
-export const verifyTotpAction = async (
-  _prev: PrevState,
-  formData: FormData
-) => {
-  const code = formData.get("otp") as string;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const signOutAction = async (_prev: PrevState, formData: FormData) => {
+  const isSignedOut = await signOut();
 
-  if (!code) {
-    return { message: "Code is required", success: false };
+  if (!isSignedOut) {
+    return { message: "Error signing out", success: false };
   }
 
-  await verifyTotp(code);
-
-  return redirect("/app");
+  return redirect("/login");
 };

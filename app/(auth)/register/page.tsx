@@ -9,18 +9,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const RegisterForm = dynamic(
   () =>
     import("@/components/register-form").then(
       ({ RegisterForm }) => RegisterForm
     ),
-  { loading: () => <p>Loading...</p> }
+  { loading: () => <Skeleton className="h-64 w-full" /> }
 );
 
 const Register = () => {
   return (
-    <Card className="w-full max-w-sm md:max-w-lg mx-auto">
+    <Card className="mx-auto w-full max-w-sm md:max-w-lg">
       <CardHeader>
         <CardTitle>Register</CardTitle>
         <CardDescription>
@@ -30,12 +31,13 @@ const Register = () => {
       <CardContent>
         <RegisterForm />
       </CardContent>
-      <CardFooter className="text-muted-foreground flex items-center justify-center">
+      <CardFooter className="flex items-center justify-center text-muted-foreground">
         <p className="text-sm">
           Already have an account?{" "}
           <Link
             href="/login"
             className="hover:underline hover:underline-offset-4"
+            prefetch={false}
           >
             Login here
           </Link>

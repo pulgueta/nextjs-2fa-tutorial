@@ -19,12 +19,12 @@ const authClient = createAuthClient({
           const retry = ctx.response.headers.get("X-Retry-After");
 
           console.info(
-            `Has excedido el límite de peticiones. Intenta nuevamente en ${retry} segundos.`
+            `You are being rate limited. Please try again in ${retry} seconds.`
           );
           break;
 
         case 500:
-          console.error("Ocurrió un error. Intenta nuevamente más tarde.");
+          console.error("An internal server error occurred.");
           break;
       }
     },

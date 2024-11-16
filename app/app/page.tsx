@@ -1,12 +1,12 @@
-import { UserCard } from "@/components/user-card";
+import { UserCardPromise } from "@/components/user/use-card-promise";
 import { getCurrentSession } from "@/lib/session";
 
-const App = async () => {
-  const user = await getCurrentSession();
+const App = () => {
+  const user = getCurrentSession();
 
   return (
-    <main className="flex items-center justify-center flex-col gap-4 min-h-dvh">
-      <UserCard user={user} />
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-4">
+      <UserCardPromise userPromise={user} />
     </main>
   );
 };

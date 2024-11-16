@@ -9,15 +9,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const LoginForm = dynamic(
   () => import("@/components/login-form").then(({ LoginForm }) => LoginForm),
-  { loading: () => <p>Loading...</p> }
+  { loading: () => <Skeleton className="h-48 w-full" /> }
 );
 
 const Login = () => {
   return (
-    <Card className="w-full max-w-sm md:max-w-lg mx-auto">
+    <Card className="mx-auto w-full max-w-sm md:max-w-lg">
       <CardHeader>
         <CardTitle>Login</CardTitle>
         <CardDescription>Enter your credentials to login</CardDescription>
@@ -25,7 +26,7 @@ const Login = () => {
       <CardContent>
         <LoginForm />
       </CardContent>
-      <CardFooter className="text-muted-foreground flex items-center justify-center">
+      <CardFooter className="flex items-center justify-center text-muted-foreground">
         <p className="text-sm">
           No account?{" "}
           <Link

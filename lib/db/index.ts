@@ -24,9 +24,11 @@ export const createUser = async (data: CreateUser) => {
   return createdUser.user;
 };
 
-export const login = async (
-  data: Pick<CreateUser, "email" | "password"> & { remember: boolean }
-) => {
+interface LoginData extends Pick<CreateUser, "email" | "password"> {
+  remember: boolean;
+}
+
+export const login = async (data: LoginData) => {
   const loggedUser = await auth.api.signInEmail({
     body: {
       email: data.email,
@@ -35,7 +37,7 @@ export const login = async (
     },
   });
 
-  return loggedUser.user;
+  return loggedUser;
 };
 
 export const generateQrCode = async (pwd: string) => {
@@ -52,30 +54,32 @@ export const generateQrCode = async (pwd: string) => {
   };
 };
 
-export const disable2FA = async (pwd: string) => {
-  const verification = await auth.api.disableTwoFactor({
-    headers: await headers(),
-    body: {
-      password: pwd,
-    },
-  });
-
-  return {
-    message: "2FA deshabilitado",
-    success: verification.status,
-  };
-};
-
-export const verifyTotp = async (code: string) => {
-  const verification = await auth.api.verifyTOTP({
+export const validateTotp = async (code: string) => {
+  const { user } = await auth.api.verifyTOTP({
     headers: await headers(),
     body: {
       code,
     },
   });
 
-  return {
-    message: "Código verificado",
-    user: verification.user,
-  };
+  return user;
+};
+
+export const signOut = async () => {
+  const { success } = await auth.api.signOut({
+    headers: await headers(),
+  });
+
+  return success;
+};
+
+export const disable2FA = async (password: string) => {
+  const success = await auth.api.disableTwoFactor({
+    headers: await headers(),
+    body: {
+      password,
+    },
+  });
+
+  return success.status;
 };

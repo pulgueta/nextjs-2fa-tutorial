@@ -1,30 +1,29 @@
 import type { NextRequest } from "next/server";
-// import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-// import { getSession } from "./lib/auth.client";
+import { getSession } from "./lib/auth.client";
 
-// const privateRoutes = ["/", "/app"] as const;
+export const PRIVATE_ROUTES = ["/app", "/"];
 
-// const isProtectedRoute = (pathname: string) =>
-//   privateRoutes.some((route) => pathname.startsWith(route));
+const isPrivateRoute = (path: string) =>
+  PRIVATE_ROUTES.some((route) => route.includes(path));
 
-export default async function middleware(_request: NextRequest) {
-  // const { data: session } = await getSession({
-  //   fetchOptions: {
-  //     headers: {
-  //       cookie: request.headers.get("cookie") ?? "",
-  //     },
-  //   },
-  // });
-  // const currentURL = request.nextUrl.searchParams.get("currentURL");
-  // const decodedURL = currentURL
-  //   ? new URL(decodeURIComponent(currentURL))
-  //   : new URL(request.url);
-  // const pathname = decodedURL?.pathname;
-  // if (session === null && isProtectedRoute(pathname)) {
-  //   return NextResponse.redirect(new URL("/login", request.url));
-  // }
-  // return null;
+export default async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
+  const { data: session } = await getSession({
+    fetchOptions: {
+      headers: {
+        cookie: request.headers.get("cookie") ?? "",
+      },
+    },
+  });
+
+  if (!session && isPrivateRoute(path)) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

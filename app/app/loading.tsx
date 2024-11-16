@@ -2,9 +2,9 @@ import { Loader } from "lucide-react";
 
 const Loading = () => {
   return (
-    <main className="flex items-center justify-center flex-col gap-4 min-h-dvh">
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-4">
       <Loader size={16} className="animate-spin" />
-      <p className="text-muted-foreground font-medium text-center">
+      <p className="text-center font-medium text-muted-foreground">
         Loading...
       </p>
     </main>

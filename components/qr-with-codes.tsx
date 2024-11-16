@@ -94,7 +94,7 @@ export const QRCodeBackup: FC<QRCodeBackupProps> = ({
               {backupCodes.map((code) => (
                 <p
                   key={code}
-                  className="text-center text-gray-600 font-medium text-sm"
+                  className="text-center text-sm font-medium text-gray-600"
                 >
                   {code}
                 </p>

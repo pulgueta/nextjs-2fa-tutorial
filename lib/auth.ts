@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { twoFactor } from "better-auth/plugins";
+import { nextCookies } from "better-auth/next-js";
 
 import { db } from "@/db/config";
 import * as schema from "@/db/schemas";
@@ -32,10 +33,6 @@ export const auth = betterAuth({
     storeSessionInDatabase: true,
     expiresIn: 60 * 60 * 24 * 7,
     updateAge: 60 * 60 * 24,
-    cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60,
-    },
   },
   user: {
     additionalFields: {
@@ -52,10 +49,12 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL ?? "",
   secret: process.env.BETTER_AUTH_SECRET ?? "",
   rateLimit: {
-    enabled: false,
+    enabled: true,
+    window: 30,
+    max: 30,
   },
   trustedOrigins: [process.env.BETTER_AUTH_URL ?? ""],
-  plugins: [twoFactor({ issuer: "Tutorial" })],
+  plugins: [twoFactor({ issuer: "Tutorial" }), nextCookies()],
 });
 
 export type Session = typeof auth.$Infer.Session;
